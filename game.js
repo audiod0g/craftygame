@@ -1,34 +1,3 @@
-/*
-*Create simple 8 x 8 platform grid (32px)
-*create walking character (32px)
-*walk around grid
-*create gravity and jump
-
-stop player from leaving map (only guard left and right - need up open for exit)
-collect reward 
-scoreboard
-collect reward animation
-time elapsed
-exit animation (disable key input, walk up)
-sound fx - jump, collect reward, walk, complete level, background music
-game completed scene
-start game scene
-
-create hazzards
-create monsters
-scores
-levels
-
-*/
-
-
-
-//  https://github.com/audiod0g/craftygame.git
-
-
-
-
-
 
 window.onload = function () {
     //start crafty
@@ -36,80 +5,12 @@ window.onload = function () {
     Crafty.init(640, 480);
     //Crafty.canvas();
 
-    //turn the sprite map into usable components
-/*    Crafty.sprite(16, "tiles.png", {
-        ground1: [5, 0],
-        ground2: [5, 37],
-    });
-    
-	Crafty.sprite(32, "grog.png", {
-        player: [0, 0],
-    });
-    
-    //method to generate the map
-    function generateWorld() {
-    	Crafty.e("TiledLevel").tiledLevel("level1.json", "DOM");
-	}*/
-    
-    
-    function generateWorld2() {
-        // Make ground floor
-        var j = 29;
-        for (var i = 0; i < 40; i++) {
-	        Crafty.e("2D, DOM, solid, ground1").attr({ x: i * 16, y: j * 16, z:2 });
-        }
-        
-        // Make steps
-        var mod = 3;
-        for (j = 25; j > 10; j -= 5) {
-			for (var i = 0; i < 40; i++) {
-				var i_int = parseInt(i / mod);
-				var i_mod = i_int % mod;
-				
-				//console.log(i, i_int, i_mod);
-			
-				if (i_mod) {
-					Crafty.e("2D, DOM, solid, ground1").attr({ x: i * 16, y: j * 16, z:1 });
-				}
-			}        
-			mod++;
-        }
-    }
-    
 
-
-/*
-    Crafty.c('Grid', {
-        _cellSize: 16,
-        Grid: function(cellSize) {
-            if(cellSize) this._cellSize = cellSize;
-            return this;
-        },
-        col: function(col) {
-            if(arguments.length === 1) {
-                this.x = this._cellSize * col;
-                return this;
-            } else {
-                return Math.round(this.x / this._cellSize);
-            }
-        },
-        row: function(row) {
-            if(arguments.length === 1) {
-                this.y = this._cellSize * row;
-                return this;
-            } else {
-                return Math.round(this.y / this._cellSize);
-            }
-        },      
-        snap: function(){
-            this.x = Math.round(this.x/this._cellSize) * this._cellSize;
-            this.y = Math.round(this.y/this._cellSize) * this._cellSize;
-        }
-    });
-    */
     
     Crafty.c('Ape', {
         Ape: function() {
+        	var x_bounds = Crafty.map.boundaries().max.x;
+        	
 			//setup animations
 			this.requires("SpriteAnimation, Collision")
 			.animate("walk_left", 0, 0, 7)
@@ -148,11 +49,16 @@ window.onload = function () {
 				}	
 	        })
 			
-			// A rudimentary way to prevent the user from passing solid areas
 			.bind('Moved', function(from) {
+				// A rudimentary way to prevent the user from passing solid areas			
 				if(this.hit('solid')){
 					this.attr({x: from.x, y:from.y});
 				}
+				
+				// Ensure player cannot walk off screen left or right
+				if ((this._x < 0) || ((this._x + this._w) > x_bounds)) {
+					this.attr({x: from.x, y:from.y});
+				}				
 			})
 			.onHit("fire", function() {
 				this.destroy();
