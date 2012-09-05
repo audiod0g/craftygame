@@ -38,8 +38,7 @@
          "opacity":1,
          "properties":
             {
-             "2D":"30",
-             "reward":""
+             "2D":"30"
             },
          "type":"tilelayer",
          "visible":true,
@@ -108,7 +107,8 @@
          "name":"spinning_coin_gold",
          "properties":
             {
-             "SpriteAnimation":"\"name\":\"spin\", \"start\":0, \"stop\":7, \"mode\":\"updown\", \"time\":100"
+             "SpriteAnimation":"\"name\":\"spin\", \"start\":0, \"stop\":7, \"mode\":\"updown\", \"time\":100",
+             "reward":"100"
             },
          "spacing":0,
          "tileheight":16,
@@ -123,7 +123,8 @@
          "name":"spinning_coin_silver",
          "properties":
             {
-             "SpriteAnimation":"\"name\":\"spin\", \"start\":0, \"stop\":7, \"mode\":\"updown\", \"time\":100"
+             "SpriteAnimation":"\"name\":\"spin\", \"start\":0, \"stop\":7, \"mode\":\"updown\", \"time\":100",
+             "reward":"50"
             },
          "spacing":0,
          "tileheight":16,
@@ -138,7 +139,8 @@
          "name":"gem_150_points",
          "properties":
             {
-             "SpriteAnimation":"\"name\":\"spin\", \"start\":0, \"stop\":3, \"mode\":\"up\", \"time\":50"
+             "SpriteAnimation":"\"name\":\"spin\", \"start\":0, \"stop\":3, \"mode\":\"up\", \"time\":50",
+             "reward":"150"
             },
          "spacing":0,
          "tileheight":16,

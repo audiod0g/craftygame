@@ -9,18 +9,21 @@
  <tileset firstgid="609" name="spinning_coin_gold" tilewidth="16" tileheight="16">
   <properties>
    <property name="SpriteAnimation" value="&quot;name&quot;:&quot;spin&quot;, &quot;start&quot;:0, &quot;stop&quot;:7, &quot;mode&quot;:&quot;updown&quot;, &quot;time&quot;:100"/>
+   <property name="reward" value="100"/>
   </properties>
   <image source="spinning_coin_gold.png" width="128" height="16"/>
  </tileset>
  <tileset firstgid="617" name="spinning_coin_silver" tilewidth="16" tileheight="16">
   <properties>
    <property name="SpriteAnimation" value="&quot;name&quot;:&quot;spin&quot;, &quot;start&quot;:0, &quot;stop&quot;:7, &quot;mode&quot;:&quot;updown&quot;, &quot;time&quot;:100"/>
+   <property name="reward" value="50"/>
   </properties>
   <image source="spinning_coin_silver.png" width="128" height="16"/>
  </tileset>
  <tileset firstgid="625" name="gem_150_points" tilewidth="16" tileheight="16">
   <properties>
    <property name="SpriteAnimation" value="&quot;name&quot;:&quot;spin&quot;, &quot;start&quot;:0, &quot;stop&quot;:3, &quot;mode&quot;:&quot;up&quot;, &quot;time&quot;:50"/>
+   <property name="reward" value="150"/>
   </properties>
   <image source="gem_150_points.png" width="64" height="16"/>
  </tileset>
@@ -44,7 +47,6 @@
  <layer name="gems" width="40" height="30">
   <properties>
    <property name="2D" value="30"/>
-   <property name="reward" value=""/>
   </properties>
   <data encoding="base64" compression="zlib">
    eJxjYBgFo2AUkAMSmVDpwQLwuSeTRm6lZxighzs142GwxeVQAZmDNC8MZUCrvDqYwWAoUwfC7hIa2jkS0xEhQGwc4yrXRsu5wQ1Ijd+hAkbTHQSMhgMmKGbCziZWz0gI06IB8COxcTEKSAcAgOcM/Q==

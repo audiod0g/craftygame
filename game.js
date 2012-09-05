@@ -48,6 +48,19 @@ window.onload = function () {
 					}									
 				}	
 	        })
+	        
+	        .onHit("reward", function(hit) {
+        		// Remove reward
+				for (var i = 0; i < hit.length; i++) {
+					hit[i].obj.destroy();
+				}
+				
+				// Add score
+				Crafty("Score").each(function () { 
+					this.points += 50;
+					this.text("Points:" + this.points) 
+				});
+	        })
 			
 			.bind('Moved', function(from) {
 				// A rudimentary way to prevent the user from passing solid areas			
@@ -72,11 +85,11 @@ window.onload = function () {
         //generateWorld();
         
         //create our player entity with some premade components
-        var player1 = Crafty.e("2D, DOM, Ape, player, Twoway, Gravity")
+        /*Crafty.e("2D, DOM, Ape, player, Twoway, Gravity")
                 .attr({ x: 16, y: 400, z: 1 })
                 .twoway(1, 5)
                 .gravity('solid')
-                .Ape();
+                .Ape(); */
     });
     
     
@@ -167,8 +180,13 @@ window.onload = function () {
 					sprite.animate(prop.name, prop.time, -1);
 				}
 	
-				// Other properties?
 				//	reward : 100
+				if (tile.properties.hasOwnProperty('reward')) {
+					//console.log('reward value:' + tile.properties['reward']);
+					sprite.addComponent('reward');
+				}
+				
+				// Other properties?
 				//	water
 				// exit
 				//console.log(tile);
@@ -183,7 +201,17 @@ window.onload = function () {
 		    
 		    // Call the main scene
 	        //Crafty.scene("main");
-	                var player1 = Crafty.e("2D, DOM, Ape, player, Twoway, Gravity")
+	        
+	        
+	        // Scoreboard
+	        Crafty.e("Score, 2D, DOM, Text")
+	        		.attr({x:0, y:0, w:256, h:32, z:500, points:0})
+	        		.textColor('#990099')
+			        .text("Points:00000");
+	        
+	        
+	        // Player
+	        Crafty.e("2D, DOM, Ape, player, Twoway, Gravity")
                 .attr({ x: 16, y: 400, z: 50 })
                 .twoway(1, 6)
                 .gravity('solid')
