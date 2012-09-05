@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="40" height="30" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="tiles" tilewidth="16" tileheight="16">
+  <image source="tiles.png" width="256" height="608"/>
+ </tileset>
+ <tileset firstgid="609" name="gold_coin" tilewidth="16" tileheight="16">
+  <image source="../gfxlib-fuzed platform game assets/Sprites/spinning_coin_gold.png" trans="ff00ff" width="128" height="16"/>
+ </tileset>
+ <tileset firstgid="617" name="silver_coin" tilewidth="16" tileheight="16">
+  <image source="../gfxlib-fuzed platform game assets/Sprites/spinning_coin_silver.png" trans="ff00ff" width="128" height="16"/>
+ </tileset>
+ <tileset firstgid="625" name="gem_150_points" tilewidth="16" tileheight="16">
+  <image source="../gfxlib-fuzed platform game assets/Sprites/gem_150_points.png" trans="ff00ff" width="64" height="16"/>
+ </tileset>
+ <tileset firstgid="629" name="gem_80_points" tilewidth="16" tileheight="16">
+  <image source="../gfxlib-fuzed platform game assets/Sprites/gem_80_points.png" trans="ff00ff" width="64" height="16"/>
+ </tileset>
+ <tileset firstgid="633" name="gem_20_points" tilewidth="16" tileheight="16">
+  <image source="../gfxlib-fuzed platform game assets/Sprites/gem_20_points.png" trans="ff00ff" width="64" height="16"/>
+ </tileset>
+ <layer name="solid" width="40" height="30">
+  <data encoding="base64" compression="zlib">
+   eJztlssKwjAUBYMWtZUq2NKX1P//TGcdknIbIgF7BmYTwiWLDIlzQgghcnDCM1YBW3zgs9jpnHthh33AFT/ljib+hK0G9virXrYa2KN6ETEsDVjutz8nVxOWBiz325+jJkSIXP+ilLfFMj/XvyjlbVEzx+WCV7xhjQ3eC6zH9g044oQzLvgusB7b9wWJggzL
+  </data>
+ </layer>
+ <layer name="coins and gems" width="40" height="30">
+  <data encoding="base64" compression="zlib">
+   eJzt1aEKACAMhGHxTY1G37+YDIKOOQ1y/F/cWLhwLCUAmJV8ftMCNz9SyYF7kR4ASnYdWM2tvoxdpVNPKfwrhQwWbz7+DQD4dMshBWA=
+  </data>
+ </layer>
+</map>
