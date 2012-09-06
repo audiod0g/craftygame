@@ -6,6 +6,31 @@ window.onload = function () {
     //Crafty.canvas();
 
 
+    Crafty.c('PickupAnimation', {
+    	init: function () {
+			this.requires("SpriteAnimation, pickup")
+			.animate("pickup_animate", 0, 0, 7)
+			.animate("pickup_animate", 32, 0)
+			.bind("AnimationEnd", function() {
+				this.destroy();
+			});
+		}
+	});
+	
+	
+	Crafty.c('Reward', {
+		_rewardValue: 0,
+		
+		reward: function(value) {
+			if (arguments.length) {
+				this._rewardValue = parseInt(value);
+				return this;
+			} else {
+				return this._rewardValue;
+			}
+		}
+	});
+	
     
     Crafty.c('Ape', {
         Ape: function() {
@@ -49,17 +74,22 @@ window.onload = function () {
 				}	
 	        })
 	        
-	        .onHit("reward", function(hit) {
+	        .onHit("Reward", function(hit) {
         		// Remove reward
 				for (var i = 0; i < hit.length; i++) {
+					// Animation 				
+					Crafty.e("2D, DOM, PickupAnimation")
+						.attr({x : hit[i].obj._x, y: hit[i].obj._y, z:100});
+					
+					// Remove reward
 					hit[i].obj.destroy();
-				}
-				
-				// Add score
-				Crafty("Score").each(function () { 
-					this.points += 50;
-					this.text("Points:" + this.points) 
-				});
+
+					// Add score
+					Crafty("Score").each(function () { 
+						this.points += hit[i].obj.reward();
+						this.text("Points:" + this.points) 
+					});
+				}				
 	        })
 			
 			.bind('Moved', function(from) {
@@ -117,6 +147,8 @@ window.onload = function () {
         	// Now load the images
        	if (!loader.result) throw "Error loading level";
        	loader.result.images.push("grog.png");
+       	loader.result.images.push("picked_up_16x16_colour.png");
+       	
        	
        	Crafty.load(loader.result.images, function() {
        		var i, tile, z, prop, reel, dir;
@@ -125,6 +157,9 @@ window.onload = function () {
        		var map = new ADMap(loader.result.layers, loader.result.tilesets);
        		
 			console.log('images loaded!', loader.result);
+			
+			// Sky blue background to match clouds
+		    Crafty.background('#5DB1FF');
 
 			// From tileset tiles build sprite components			
 			for (i = 0; i < loader.result.tilesets.length; i++) {
@@ -183,7 +218,8 @@ window.onload = function () {
 				//	reward : 100
 				if (tile.properties.hasOwnProperty('reward')) {
 					//console.log('reward value:' + tile.properties['reward']);
-					sprite.addComponent('reward');
+					sprite.addComponent('Reward');
+					sprite.reward(tile.properties['reward']);
 				}
 				
 				// Other properties?
@@ -199,6 +235,13 @@ window.onload = function () {
         		player: [0, 0],
 		    });
 		    
+			// Create reward animation sprite
+			Crafty.sprite(16, "picked_up_16x16_colour.png", {
+        		pickup: [0, 0],
+		    });
+			
+			
+					    
 		    // Call the main scene
 	        //Crafty.scene("main");
 	        
@@ -207,7 +250,7 @@ window.onload = function () {
 	        Crafty.e("Score, 2D, DOM, Text")
 	        		.attr({x:0, y:0, w:256, h:32, z:500, points:0})
 	        		.textColor('#990099')
-			        .text("Points:00000");
+			        .text("Points:0");
 	        
 	        
 	        // Player
@@ -217,6 +260,9 @@ window.onload = function () {
                 .gravity('solid')
                 .gravityConst(0.2)
                 .Ape();
+                
+            //Crafty.e("PickupAnimation");
+
 		});
     });
 
