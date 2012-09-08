@@ -14,6 +14,7 @@ window.onload = function () {
 			.bind("AnimationEnd", function() {
 				this.destroy();
 			});
+			Crafty.audio.play('reward');
 		}
 	});
 	
@@ -30,6 +31,40 @@ window.onload = function () {
 			}
 		}
 	});
+	
+	
+    Crafty.c('Score', {
+    	_score: 0,
+    	_rewardsRequired: 0,
+    
+    	init: function () {
+			this.requires("2D, DOM, Text")
+			.attr({x:0, y:0, w:512, h:32, z:500})
+	        .textColor('#990099');
+		},
+		
+		rewardsRequired: function(value) {
+			if (arguments.length) {
+				this._rewardsRequired = parseInt(value);
+				return this;
+			} else {
+				return this._rewardsRequired;
+			}
+		},
+		
+		incScore: function(value) {
+			this._score += value;
+		},
+		
+		decRewardsRequired: function() {
+			this._rewardsRequired--;
+		},
+		
+		drawScore: function() {
+			this.text('Points:' + this._score + " Rewards needed:" + this._rewardsRequired);
+		}
+	});	
+	        		
 	
     
     Crafty.c('Ape', {
@@ -86,8 +121,9 @@ window.onload = function () {
 
 					// Add score
 					Crafty("Score").each(function () { 
-						this.points += hit[i].obj.reward();
-						this.text("Points:" + this.points) 
+						this.incScore(hit[i].obj.reward());
+						this.decRewardsRequired();
+						this.drawScore();
 					});
 				}				
 	        })
@@ -151,7 +187,7 @@ window.onload = function () {
        	
        	
        	Crafty.load(loader.result.images, function() {
-       		var i, tile, z, prop, reel, dir;
+       		var i, tile, z, prop, reel, dir, rewardCount = 0;
        		var timeout;
        		
        		var map = new ADMap(loader.result.layers, loader.result.tilesets);
@@ -220,7 +256,23 @@ window.onload = function () {
 					//console.log('reward value:' + tile.properties['reward']);
 					sprite.addComponent('Reward');
 					sprite.reward(tile.properties['reward']);
+					rewardCount++;
 				}
+				
+				// Exit
+				
+				/*
+				
+				on hit check rewardrequired.
+				if zero disable controls
+				add enterframe callback to align towards ladder and up
+				until offscreen
+				trigger level complete scene?
+				
+				
+				*/
+				
+				
 				
 				// Other properties?
 				//	water
@@ -244,14 +296,12 @@ window.onload = function () {
 					    
 		    // Call the main scene
 	        //Crafty.scene("main");
-	        
+            Crafty.audio.add({
+            	reward: ['reward.mp3', 'reward.wav', 'reward.ogg']
+            });            	        
 	        
 	        // Scoreboard
-	        Crafty.e("Score, 2D, DOM, Text")
-	        		.attr({x:0, y:0, w:256, h:32, z:500, points:0})
-	        		.textColor('#990099')
-			        .text("Points:0");
-	        
+	        Crafty.e("Score").rewardsRequired(rewardCount).drawScore();
 	        
 	        // Player
 	        Crafty.e("2D, DOM, Ape, player, Twoway, Gravity")
@@ -260,8 +310,10 @@ window.onload = function () {
                 .gravity('solid')
                 .gravityConst(0.2)
                 .Ape();
+
                 
             //Crafty.e("PickupAnimation");
+            
 
 		});
     });
