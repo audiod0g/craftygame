@@ -162,160 +162,159 @@ window.onload = function () {
     //the loading screen that will display while our assets load
     Crafty.scene("loading", function () {
     	var loader, sprite;
-        //load takes an array of assets and a callback when complete
-/*        console.log('about to load');
-        Crafty.load(["grog.png"], function () {
-        	console.log('loaded!');
-            Crafty.scene("main"); //when everything is loaded, run the main scene
-        });
- */
+    	var imageList = [	"tiles.png", 
+    						"spinning_coin_gold.png", 
+    						"spinning_coin_silver.png", 
+    					 	"gem_150_points.png", 
+    					 	"grog.png", 
+    					 	"picked_up_16x16_colour.png"];
+    	var progress = Crafty.e("2D, DOM, Text").attr({ w: 640, h: 20, x: 0, y: 220 })
+                .text("Loading: 0%")
+                .css({ "text-align": "center" });        
+
         //black background with some loading text
         Crafty.background("#000");
-        Crafty.e("2D, DOM, Text").attr({ w: 100, h: 20, x: 150, y: 120 })
-                .text("Loading")
-                .css({ "text-align": "center" });
-                
-        
-        loader = new ADLevelLoader('level1.json');
-        //loader = new ADLevelLoader('test.json');
-        
-       	//console.log('json parsed', loader.result);
-        	// Now load the images
+              
+		// Load game images
+       	Crafty.load(
+       		imageList, 
+			function() {
+				Crafty.scene('level1');
+			}, 
+			function(e) {
+       			progress.text('Loading: ' + parseInt(e.percent) + '%');
+       		},
+       		function(e) {
+       			console.log(e);
+       			throw "Error loading images";
+       		}
+       	);
+    });
+    
+    Crafty.scene("level1", function () {
+		var i, tile, z, prop, reel, dir, rewardCount = 0;
+		var timeout;
+		           	
+		var loader = new ADLevelLoader('level1.json');
        	if (!loader.result) throw "Error loading level";
-       	loader.result.images.push("grog.png");
-       	loader.result.images.push("picked_up_16x16_colour.png");
-       	
-       	
-       	Crafty.load(loader.result.images, function() {
-       		var i, tile, z, prop, reel, dir, rewardCount = 0;
-       		var timeout;
-       		
-       		var map = new ADMap(loader.result.layers, loader.result.tilesets);
-       		
-			console.log('images loaded!', loader.result);
-			
-			// Sky blue background to match clouds
-		    Crafty.background('#5DB1FF');
 
-			// From tileset tiles build sprite components			
-			for (i = 0; i < loader.result.tilesets.length; i++) {
-				if (loader.result.tilesets[i].hasTiles) {
-					spriteComponentList = {};	  	  
-					for (k in loader.result.tilesets[i].tiles) {
-						if (loader.result.tilesets[i].tiles.hasOwnProperty(k)) {
-							// 22 
-							spriteComponentList['l1ti' + k] = loader.result.tilesets[i].tiles[k];
-						}		  	  	  
-					}
-					//console.log(spriteComponentList);
-					  
-					// If we are doing a 2 step conversion, list is the data to save
-					Crafty.sprite(loader.result.tilesets[i].importData.tilewidth, loader.result.tilesets[i].importData.image, spriteComponentList);
+		var map = new ADMap(loader.result.layers, loader.result.tilesets);
+       	
+		// Sky blue background to match clouds
+		Crafty.background('#5DB1FF');
+
+		// From tileset tiles build sprite components			
+		for (i = 0; i < loader.result.tilesets.length; i++) {
+			if (loader.result.tilesets[i].hasTiles) {
+				spriteComponentList = {};	  	  
+				for (k in loader.result.tilesets[i].tiles) {
+					if (loader.result.tilesets[i].tiles.hasOwnProperty(k)) {
+						// 22 
+						spriteComponentList['l1ti' + k] = loader.result.tilesets[i].tiles[k];
+					}		  	  	  
 				}
+				//console.log(spriteComponentList);
+				  
+				// If we are doing a 2 step conversion, list is the data to save
+				Crafty.sprite(loader.result.tilesets[i].importData.tilewidth, loader.result.tilesets[i].importData.image, spriteComponentList);
 			}
-	
-			// Now iterate the layers and draw using these new components
-			timeout = 1000;
+		}
+
+		// Now iterate the layers and draw using these new components
+		timeout = 1000;
+		tile = map.getNextTile();
+		while(tile && (timeout > 0)) {
+		
+			//console.log(tile.index, tile.properties);
+			
+			// 2D. Player has z = 1
+			z = tile.properties.hasOwnProperty('2D') ? tile.properties['2D'] : 0;
+			if (!z) z = 50;
+			sprite = Crafty.e("2D, DOM, l1ti" + tile.index).attr({ x: tile.x * 16, y: tile.y * 16, z:z });
+			
+			// solid
+			if (tile.properties.hasOwnProperty('solid')) {
+				sprite.addComponent('solid');
+			}
+			
+			// SpriteAnimation
+			if (tile.properties.hasOwnProperty('SpriteAnimation')) {
+				prop = JSON.parse('{' + tile.properties['SpriteAnimation'] + '}');
+				//console.log(tile.index, prop);
+				sprite.addComponent('SpriteAnimation');
+				if ('updown' == prop.mode) {
+					reel = [];
+					for(i = prop.start; i <= prop.stop; i++) reel.push([i,0]);
+					for(i = prop.stop - 1; i > prop.start; i--) reel.push([i,0]);
+					sprite.animate(prop.name, reel);
+				} else if ('up' == prop.mode) {
+					sprite.animate(prop.name, prop.start, 0, prop.stop);
+				} else if ('down' == prop.mode) {
+					sprite.animate(prop.name, prop.stop, 0, prop.start);
+				} else {
+					console.log('unknown spriteanimation mode', prop.mode);
+				}
+				sprite.animate(prop.name, prop.time, -1);
+			}
+
+			//	reward : 100
+			if (tile.properties.hasOwnProperty('reward')) {
+				//console.log('reward value:' + tile.properties['reward']);
+				sprite.addComponent('Reward');
+				sprite.reward(tile.properties['reward']);
+				rewardCount++;
+			}
+			
+			// Exit
+			
+			/*
+			
+			on hit check rewardrequired.
+			if zero disable controls
+			add enterframe callback to align towards ladder and up
+			until offscreen
+			trigger level complete scene?
+			
+			
+			*/
+			
+			
+			
+			// Other properties?
+			//	water
+			// exit
+			//console.log(tile);
 			tile = map.getNextTile();
-			while(tile && (timeout > 0)) {
-			
-				//console.log(tile.index, tile.properties);
-				
-				// 2D. Player has z = 1
-				z = tile.properties.hasOwnProperty('2D') ? tile.properties['2D'] : 0;
-				if (!z) z = 50;
-				sprite = Crafty.e("2D, DOM, l1ti" + tile.index).attr({ x: tile.x * 16, y: tile.y * 16, z:z });
-				
-				// solid
-				if (tile.properties.hasOwnProperty('solid')) {
-					sprite.addComponent('solid');
-				}
-				
-				// SpriteAnimation
-				if (tile.properties.hasOwnProperty('SpriteAnimation')) {
-					prop = JSON.parse('{' + tile.properties['SpriteAnimation'] + '}');
-					//console.log(tile.index, prop);
-					sprite.addComponent('SpriteAnimation');
-					if ('updown' == prop.mode) {
-						reel = [];
-						for(i = prop.start; i <= prop.stop; i++) reel.push([i,0]);
-						for(i = prop.stop - 1; i > prop.start; i--) reel.push([i,0]);
-						sprite.animate(prop.name, reel);
-					} else if ('up' == prop.mode) {
-						sprite.animate(prop.name, prop.start, 0, prop.stop);
-					} else if ('down' == prop.mode) {
-						sprite.animate(prop.name, prop.stop, 0, prop.start);
-					} else {
-						console.log('unknown spriteanimation mode', prop.mode);
-					}
-					sprite.animate(prop.name, prop.time, -1);
-				}
-	
-				//	reward : 100
-				if (tile.properties.hasOwnProperty('reward')) {
-					//console.log('reward value:' + tile.properties['reward']);
-					sprite.addComponent('Reward');
-					sprite.reward(tile.properties['reward']);
-					rewardCount++;
-				}
-				
-				// Exit
-				
-				/*
-				
-				on hit check rewardrequired.
-				if zero disable controls
-				add enterframe callback to align towards ladder and up
-				until offscreen
-				trigger level complete scene?
-				
-				
-				*/
-				
-				
-				
-				// Other properties?
-				//	water
-				// exit
-				//console.log(tile);
-				tile = map.getNextTile();
-				timeout--;
-			}
-			
-			// Create player sprite
-			Crafty.sprite(32, "grog.png", {
-        		player: [0, 0],
-		    });
-		    
-			// Create reward animation sprite
-			Crafty.sprite(16, "picked_up_16x16_colour.png", {
-        		pickup: [0, 0],
-		    });
-			
-			
-					    
-		    // Call the main scene
-	        //Crafty.scene("main");
-            Crafty.audio.add({
-            	reward: ['reward.mp3', 'reward.wav', 'reward.ogg']
-            });            	        
-	        
-	        // Scoreboard
-	        Crafty.e("Score").rewardsRequired(rewardCount).drawScore();
-	        
-	        // Player
-	        Crafty.e("2D, DOM, Ape, player, Twoway, Gravity")
-                .attr({ x: 16, y: 400, z: 50 })
-                .twoway(1, 6)
-                .gravity('solid')
-                .gravityConst(0.2)
-                .Ape();
-
-                
-            //Crafty.e("PickupAnimation");
-            
-
+			timeout--;
+		}
+		
+		// Create player sprite
+		Crafty.sprite(32, "grog.png", {
+			player: [0, 0],
 		});
+		
+		// Create reward animation sprite
+		Crafty.sprite(16, "picked_up_16x16_colour.png", {
+			pickup: [0, 0],
+		});
+				
+		// Call the main scene
+		//Crafty.scene("main");
+		Crafty.audio.add({
+			reward: ['reward.mp3', 'reward.wav', 'reward.ogg']
+		});            	        
+		
+		// Scoreboard
+		Crafty.e("Score").rewardsRequired(rewardCount).drawScore();
+		
+		// Player
+		Crafty.e("2D, DOM, Ape, player, Twoway, Gravity")
+			.attr({ x: 16, y: 400, z: 50 })
+			.twoway(1, 6)
+			.gravity('solid')
+			.gravityConst(0.2)
+			.Ape();
+
     });
 
     //automatically play the loading scene
