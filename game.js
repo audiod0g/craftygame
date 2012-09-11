@@ -1,10 +1,7 @@
 
 window.onload = function () {
-    //start crafty
-//    Crafty.init(64, 64);
-    Crafty.init(640, 480);
-    //Crafty.canvas();
 
+    Crafty.init(640, 480);
 
     Crafty.c('PickupAnimation', {
     	init: function () {
@@ -29,6 +26,40 @@ window.onload = function () {
 			} else {
 				return this._rewardValue;
 			}
+		}
+	});
+	
+	
+	Crafty.c('Exitwalk', {
+		init: function() {
+			// Right point we first need to walk to
+		    var x_bounds = Crafty.map.boundaries().max.x - this._w;
+		    
+		    // Switch off controls - we are on auto pilot now
+			this.disableControl();
+			
+			// Remove gravity - so we can walk up
+			this.antigravity();
+			
+			// Walk right animation 
+			if (!this.isPlaying("walk_right")) {
+				this.stop().animate("walk_right", 10, -1);
+			}
+				
+			// Walk right then up till we go offscreen
+			this.bind("EnterFrame", function() {
+				if (this._x <= x_bounds) {
+					// Walk right
+					this.x = this._x + 1;
+				} else if (this._y < (0 - this._h)) {
+					// We are done
+					console.log("we are done!");
+					this.y = 60;
+				} else {
+					// Walk up
+					this.y = this._y - 1;
+				}
+			});
 		}
 	});
 	
@@ -116,16 +147,22 @@ window.onload = function () {
 					Crafty.e("2D, DOM, PickupAnimation")
 						.attr({x : hit[i].obj._x, y: hit[i].obj._y, z:100});
 					
-					// Remove reward
-					hit[i].obj.destroy();
-
 					// Add score
 					Crafty("Score").each(function () { 
 						this.incScore(hit[i].obj.reward());
 						this.decRewardsRequired();
 						this.drawScore();
 					});
+
+					// Remove reward
+					hit[i].obj.destroy();
 				}				
+	        })
+	        
+	        .onHit('exit', function(hit) {
+	        	if (!this.has('Exitwalk')) {
+					this.addComponent('Exitwalk');
+				}
 	        })
 			
 			.bind('Moved', function(from) {
@@ -266,23 +303,13 @@ window.onload = function () {
 			}
 			
 			// Exit
-			
-			/*
-			
-			on hit check rewardrequired.
-			if zero disable controls
-			add enterframe callback to align towards ladder and up
-			until offscreen
-			trigger level complete scene?
-			
-			
-			*/
-			
+			if (tile.properties.hasOwnProperty('exit')) {
+				sprite.addComponent('exit');
+			}
 			
 			
 			// Other properties?
 			//	water
-			// exit
 			//console.log(tile);
 			tile = map.getNextTile();
 			timeout--;
@@ -309,7 +336,8 @@ window.onload = function () {
 		
 		// Player
 		Crafty.e("2D, DOM, Ape, player, Twoway, Gravity")
-			.attr({ x: 16, y: 400, z: 50 })
+/*			.attr({ x: 16, y: 400, z: 50 }) */
+			.attr({ x: 550, y: 50, z: 50 })
 			.twoway(1, 6)
 			.gravity('solid')
 			.gravityConst(0.2)
