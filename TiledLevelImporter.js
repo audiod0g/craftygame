@@ -67,13 +67,13 @@ function ADLayer(theImportData) {
 
 
 // Class to link layer tiles to the tilesets, so the properties can be combined. If there is a clash layer over-rides tileset prop
-function ADMap(theLayers, theTilesets) {
-	this.layers = theLayers;
-	this.tilesets = theTilesets;
+function ADMap(level) {
+	this.layers = level.layers;
+	this.tilesets = level.tilesets;
 	this.layerIndex = 0;
-	this.layerCount = theLayers.length;
+	this.layerCount = level.layers.length;
 	this.tilesetIndex = 0;
-	this.tilesetCount = theTilesets.length;
+	this.tilesetCount = level.tilesets.length;
 	
 	// If there is a clash layer over-rides tileset prop
 	this.mergeLayerAndTilesetProperties = function(iLayer, iTileset) {
@@ -115,58 +115,66 @@ function ADMap(theLayers, theTilesets) {
 		return tile;		
 	}
 	
-	// return l1ti628 for level 1, tile 628
-	this.getComponentName = function(tilesetIndex) {
-	
+
+	this.createSpriteComponents = function() {
+		var i, k, spriteComponentList;
+		for (i = 0; i < this.tilesetCount; i++) {
+			if (this.tilesets[i].hasTiles) {
+				spriteComponentList = {};	  	  
+				for (k in this.tilesets[i].tiles) {
+					if (this.tilesets[i].tiles.hasOwnProperty(k)) {
+						spriteComponentList['l1ti' + k] = this.tilesets[i].tiles[k];
+					}		  	  	  
+				}
+				//console.log(spriteComponentList);
+				  
+				// If we are doing a 2 step conversion, list is the data to save
+				Crafty.sprite(this.tilesets[i].importData.tilewidth, this.tilesets[i].importData.image, spriteComponentList);
+			}
+		}	
 	}
 }
 
 
-// Crafty.load doesn't play with jQuery.ajax so roll our own json loader....
-
-// Load JSON text from server hosted file and return JSON parsed object
-function loadJSON(filePath) {
-  // Load json file;
-  var json = loadTextFileAjaxSync(filePath, "application/json");
-  // Parse json
-  return JSON.parse(json);
-}   
-
-// Load text with Ajax synchronously: takes path to file and optional MIME type
-function loadTextFileAjaxSync(filePath, mimeType)
-{
-  var xmlhttp=new XMLHttpRequest();
-  xmlhttp.open("GET",filePath,false);
-  if (mimeType != null) {
-    if (xmlhttp.overrideMimeType) {
-      xmlhttp.overrideMimeType(mimeType);
-    }
-  }
-  xmlhttp.send();
-  //console.log(xmlhttp);
-  if (xmlhttp.status==200 || xmlhttp.status==0)
-  {
-    return xmlhttp.responseText;
-  }
-  else {
-    // TODO Throw exception
-    throw "balls";
-    return null;
-  }
-}
 
 
 
-function ADLevelLoader(levelURL) {
-	var that = this;
-	var level;
+function ADLevelLoader(options) {
+	var _options = options || {};
+	this.map = null;
+	this.tiledData = null;
+	this.meta = {};
+	this.scenes = _options.scenes || [];
+	this.startScene = _options.startScene || '';
+	this.defaultZ = _options.defaultZ || 50;
 	
-	this.result = null;
+	// If a function is defined signature is: function(loader, sprite, value) 
+	// where loader = ADLevelLoader instance, sprite = the sprite to configure, value = the component property value
+	this.componentRules = _options.componentRules || {}; 
+
+
+	// Load textfile with Ajax synchronously: takes path to file and optional MIME type
+	function _loadTextFileAjaxSync(filePath, mimeType) {
+		var xmlhttp=new XMLHttpRequest();
+		xmlhttp.open("GET",filePath,false);
+		if (mimeType != null) {
+			if (xmlhttp.overrideMimeType) {
+				xmlhttp.overrideMimeType(mimeType);
+			}
+		}
+		xmlhttp.send();
+		//console.log(xmlhttp);
+		if (xmlhttp.status==200 || xmlhttp.status==0) {
+			return xmlhttp.responseText;
+		} else {
+			throw "AJAX file load error";
+			return null;
+		}
+	}
+
 	
-	
-	
-    /* Return a list of unique tile indexes used by the layers */
-    this._getTileIndexesFromLayers = function(layers) {
+    // Return a list of unique tile indexes used by the layers
+    function _getTileIndexesFromLayers(layers) {
     	var tileIndexes = {};
     	var iLayer, lenLayer, layer, iData, lenData, cell;
     	// Iterate layers
@@ -181,58 +189,112 @@ function ADLevelLoader(levelURL) {
     		}
     	}
     	return tileIndexes;
-    };
+    }
     
-    level = loadJSON(levelURL);
-
-	var tileIndexes, i, k, tilesetCount, tilesetIndex, tileIndexesCount, spriteComponentList;
-	var tileIndexesSorted = [];
-	var tilesets = [];
-	var layers = [];
-	var images = [];
-	var layerCount, tile;
-	console.log(level);
+    
+    this.loadTiledJSON = function(levelURL) {
+		var tileIndexes, i, k, tilesetCount, tilesetIndex, tileIndexesCount, spriteComponentList;
+		var tileIndexesSorted = [];
+		var tilesets = [];
+		var layers = [];
+		var images = [];
+		var layerCount, tile;
+		var level = _loadTextFileAjaxSync(levelURL, "application/json");
+		level = JSON.parse(level);
+		//console.log(level);
+		
+		// List of which tile indexes are used in the layers
+		tileIndexes = _getTileIndexesFromLayers(level.layers);
 	
-	// List of which tile indexes are used in the layers
-	tileIndexes = that._getTileIndexesFromLayers(level.layers);
-
-  
-	// Sort indexes low to high
-	for (k in tileIndexes) {
-		if (tileIndexes.hasOwnProperty(k)) {
-			tileIndexesSorted.push(tileIndexes[k]);
+	  
+		// Sort indexes low to high
+		for (k in tileIndexes) {
+			if (tileIndexes.hasOwnProperty(k)) {
+				tileIndexesSorted.push(tileIndexes[k]);
+			}
 		}
-	}
-	tileIndexesSorted.sort(function(a,b){return a - b});
-	//console.log(tileIndexesSorted);
-
-  
-	// Create a set of tileset objects, loaded with import data
-	// These will store the sorted tile indexes
-	for (i = 0, tilesetCount = level.tilesets.length; i < tilesetCount; i++) {
-		tilesets[i] = new ADTileset(level.tilesets[i]);
-		images.push(level.tilesets[i].image);
-	}
-	//console.log(tilesets);
-
-
-	// Add the sorted tile indexes to the correct tile set. As they are sorted we can step through
-	tilesetIndex = 0;
-	for (i = 0, tileIndexesCount = tileIndexesSorted.length; i < tileIndexesCount; i++) {
-		while (!(tilesets[tilesetIndex].addTileWithIndex(tileIndexesSorted[i]))) {
-			tilesetIndex++;
-			if (tilesetIndex >= tilesetCount) throw "No tileset to process tileIndex:" + tileIndexes[i];
+		tileIndexesSorted.sort(function(a,b){return a - b});
+		//console.log(tileIndexesSorted);
+	
+	  
+		// Create a set of tileset objects, loaded with import data
+		// These will store the sorted tile indexes
+		for (i = 0, tilesetCount = level.tilesets.length; i < tilesetCount; i++) {
+			tilesets[i] = new ADTileset(level.tilesets[i]);
+			images.push(level.tilesets[i].image);
 		}
+		//console.log(tilesets);
+	
+	
+		// Add the sorted tile indexes to the correct tile set. As they are sorted we can step through
+		tilesetIndex = 0;
+		for (i = 0, tileIndexesCount = tileIndexesSorted.length; i < tileIndexesCount; i++) {
+			while (!(tilesets[tilesetIndex].addTileWithIndex(tileIndexesSorted[i]))) {
+				tilesetIndex++;
+				if (tilesetIndex >= tilesetCount) throw "No tileset to process tileIndex:" + tileIndexes[i];
+			}
+		}
+		//console.log(tilesets);
+	
+	
+		// Build layer objects from layer data
+		for (i = 0, layerCount = level.layers.length; i < layerCount; i++) {
+			layers.push(new ADLayer(level.layers[i]));
+		}
+	  
+		// Now we have arrays of tileset objects (tilesets), images (images) and layer objects (layers)
+		// Load the images, then we can make some crafty components and sprites
+		this.tiledData = {tilesets:tilesets, images:images, layers:layers};
+		this.map = new ADMap(this.tiledData);
 	}
-	//console.log(tilesets);
+	
+	
+	this.createSpriteComponents = function() {
+		if (!this.map) return;
+		this.map.createSpriteComponents();
+	}
 
 
-	// Build layer objects from layer data
-	for (i = 0, layerCount = level.layers.length; i < layerCount; i++) {
-		layers.push(new ADLayer(level.layers[i]));
+	this.getMeta = function(field, theDefault) {
+		return (this.meta.hasOwnProperty(field) && (this.meta[field] != null)) ? this.meta[field] : theDefault;
 	}
-  
-	// Now we have arrays of tileset objects (tilesets), images (images) and layer objects (layers)
-	// Load the images, then we can make some crafty components and sprites
-	that.result = {tilesets:tilesets, images:images, layers:layers};
+	
+	
+	this.setMeta = function(field, value) {
+		this.meta[field] = value;
+	}
+	
+	
+	this.createSpriteEntities = function() {
+		if (!this.map) return;
+		
+		var timeout = 5000;
+		var component, rule, tile, z;// = this.map.getNextTile();
+		this.meta = {};
+		while((tile = this.map.getNextTile()) && (timeout-- > 0)) {		
+			//console.log(tile.index, tile.properties);
+			
+			// All tiles are 2D. If 2D property is not defined apply the defaultZ
+			z = tile.properties.hasOwnProperty('2D') ? tile.properties['2D'] : 0;
+			if (!z) z = 50;
+			sprite = Crafty.e("2D, DOM, l1ti" + tile.index).attr({ x: tile.x * 16, y: tile.y * 16, z:z });
+			
+			// Cycle through the defined component rules and apply them if we have matching properties in the tile
+			for (component in this.componentRules) {
+				if (this.componentRules.hasOwnProperty(component)) {
+					if (tile.properties.hasOwnProperty(component)) {
+						// Component is defined in the tile - add it
+						sprite.addComponent(component);
+						
+						// Do we have a callback to apply?
+						rule = this.componentRules[component];
+						if (typeof rule == 'function') {
+							// We do - pass in the level instance, the sprite to configure, the component property value
+							rule(this, sprite, tile.properties[component]);
+						}
+					}
+				}
+			}
+		}	
+	}
 }

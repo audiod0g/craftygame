@@ -16,7 +16,7 @@ window.onload = function () {
 	});
 	
 	
-	Crafty.c('Reward', {
+	Crafty.c('reward', {
 		_rewardValue: 0,
 		
 		reward: function(value) {
@@ -140,7 +140,7 @@ window.onload = function () {
 				}	
 	        })
 	        
-	        .onHit("Reward", function(hit) {
+	        .onHit("reward", function(hit) {
         		// Remove reward
 				for (var i = 0; i < hit.length; i++) {
 					// Animation 				
@@ -232,88 +232,49 @@ window.onload = function () {
 		var i, tile, z, prop, reel, dir, rewardCount = 0;
 		var timeout;
 		           	
-		var loader = new ADLevelLoader('level1.json');
-       	if (!loader.result) throw "Error loading level";
+		var levelLoader = new ADLevelLoader({
+			scenes: ['loading', 'start', 'level1', 'level2', 'level3', 'gameover'],
+			startScene: 'start',
+			defaultZ : 50,
+			componentRules: {
+				solid: true,
+				exit: true,
+				reward: function(loader, sprite, value) {
+					sprite.reward(value);
+					var rc = loader.getMeta('rewardCount', 0);
+					rc++;
+					loader.setMeta('rewardCount', rc);
+				},
+				SpriteAnimation: function(loader, sprite, value) {
+					var reel;
+					var prop = JSON.parse('{' + value + '}');
+					if ('updown' == prop.mode) {
+						reel = [];
+						for(i = prop.start; i <= prop.stop; i++) reel.push([i,0]);
+						for(i = prop.stop - 1; i > prop.start; i--) reel.push([i,0]);
+						sprite.animate(prop.name, reel);
+					} else if ('up' == prop.mode) {
+						sprite.animate(prop.name, prop.start, 0, prop.stop);
+					} else if ('down' == prop.mode) {
+						sprite.animate(prop.name, prop.stop, 0, prop.start);
+					} else {
+						console.log('unknown spriteanimation mode', prop.mode);
+					}
+					sprite.animate(prop.name, prop.time, -1);
+				}
+			}
+		});
+		
+		levelLoader.loadTiledJSON('level1.json');
+       	if (!levelLoader.tiledData) throw "Error loading level";
 
-		var map = new ADMap(loader.result.layers, loader.result.tilesets);
+		var map = new ADMap(levelLoader.tiledData);
+		levelLoader.createSpriteComponents();
+		levelLoader.createSpriteEntities();
        	
 		// Sky blue background to match clouds
 		Crafty.background('#5DB1FF');
 
-		// From tileset tiles build sprite components			
-		for (i = 0; i < loader.result.tilesets.length; i++) {
-			if (loader.result.tilesets[i].hasTiles) {
-				spriteComponentList = {};	  	  
-				for (k in loader.result.tilesets[i].tiles) {
-					if (loader.result.tilesets[i].tiles.hasOwnProperty(k)) {
-						// 22 
-						spriteComponentList['l1ti' + k] = loader.result.tilesets[i].tiles[k];
-					}		  	  	  
-				}
-				//console.log(spriteComponentList);
-				  
-				// If we are doing a 2 step conversion, list is the data to save
-				Crafty.sprite(loader.result.tilesets[i].importData.tilewidth, loader.result.tilesets[i].importData.image, spriteComponentList);
-			}
-		}
-
-		// Now iterate the layers and draw using these new components
-		timeout = 1000;
-		tile = map.getNextTile();
-		while(tile && (timeout > 0)) {
-		
-			//console.log(tile.index, tile.properties);
-			
-			// 2D. Player has z = 1
-			z = tile.properties.hasOwnProperty('2D') ? tile.properties['2D'] : 0;
-			if (!z) z = 50;
-			sprite = Crafty.e("2D, DOM, l1ti" + tile.index).attr({ x: tile.x * 16, y: tile.y * 16, z:z });
-			
-			// solid
-			if (tile.properties.hasOwnProperty('solid')) {
-				sprite.addComponent('solid');
-			}
-			
-			// SpriteAnimation
-			if (tile.properties.hasOwnProperty('SpriteAnimation')) {
-				prop = JSON.parse('{' + tile.properties['SpriteAnimation'] + '}');
-				//console.log(tile.index, prop);
-				sprite.addComponent('SpriteAnimation');
-				if ('updown' == prop.mode) {
-					reel = [];
-					for(i = prop.start; i <= prop.stop; i++) reel.push([i,0]);
-					for(i = prop.stop - 1; i > prop.start; i--) reel.push([i,0]);
-					sprite.animate(prop.name, reel);
-				} else if ('up' == prop.mode) {
-					sprite.animate(prop.name, prop.start, 0, prop.stop);
-				} else if ('down' == prop.mode) {
-					sprite.animate(prop.name, prop.stop, 0, prop.start);
-				} else {
-					console.log('unknown spriteanimation mode', prop.mode);
-				}
-				sprite.animate(prop.name, prop.time, -1);
-			}
-
-			//	reward : 100
-			if (tile.properties.hasOwnProperty('reward')) {
-				//console.log('reward value:' + tile.properties['reward']);
-				sprite.addComponent('Reward');
-				sprite.reward(tile.properties['reward']);
-				rewardCount++;
-			}
-			
-			// Exit
-			if (tile.properties.hasOwnProperty('exit')) {
-				sprite.addComponent('exit');
-			}
-			
-			
-			// Other properties?
-			//	water
-			//console.log(tile);
-			tile = map.getNextTile();
-			timeout--;
-		}
 		
 		// Create player sprite
 		Crafty.sprite(32, "grog.png", {
@@ -332,7 +293,7 @@ window.onload = function () {
 		});            	        
 		
 		// Scoreboard
-		Crafty.e("Score").rewardsRequired(rewardCount).drawScore();
+		Crafty.e("Score").rewardsRequired(levelLoader.getMeta('rewardCount', 0)).drawScore();
 		
 		// Player
 		Crafty.e("2D, DOM, Ape, player, Twoway, Gravity")
@@ -349,3 +310,12 @@ window.onload = function () {
     Crafty.scene("loading");
     
 };
+
+
+
+// loading
+// intro
+// level1
+// level2
+// level3
+// game over
