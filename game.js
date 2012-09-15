@@ -1,7 +1,6 @@
 window.onload = function () {
 
-
-    Crafty.init(640, 480);
+	var levelLoader, scoreboard;
 
     Crafty.c('PickupAnimation', {
     	init: function () {
@@ -11,7 +10,7 @@ window.onload = function () {
 			.bind("AnimationEnd", function() {
 				this.destroy();
 			});
-			Crafty.audio.play('reward');
+			Crafty.audio.play('reward', 1, 0.4);
 		}
 	});
 	
@@ -54,7 +53,11 @@ window.onload = function () {
 				} else if (this._y < (0 - this._h)) {
 					// We are done
 					console.log("we are done!");
-					this.y = 60;
+					
+					// Fireup next level?
+					
+					
+					//this.y = 60;
 				} else {
 					// Walk up
 					this.y = this._y - 1;
@@ -184,18 +187,6 @@ window.onload = function () {
     });
 
 
-    Crafty.scene("main", function () {
-        //generateWorld();
-        
-        //create our player entity with some premade components
-        /*Crafty.e("2D, DOM, Ape, player, Twoway, Gravity")
-                .attr({ x: 16, y: 400, z: 1 })
-                .twoway(1, 5)
-                .gravity('solid')
-                .Ape(); */
-    });
-    
-    
     //the loading screen that will display while our assets load
     Crafty.scene("loading", function () {
     	var loader, sprite;
@@ -211,6 +202,12 @@ window.onload = function () {
 
         //black background with some loading text
         Crafty.background("#000");
+        
+        // Prepare game audio
+    	Crafty.audio.add({
+			reward: ['reward.mp3', 'reward.wav', 'reward.ogg'],
+			level1: ['level1.mp3']
+		});            	        
               
 		// Load game images
        	Crafty.load(
@@ -229,52 +226,14 @@ window.onload = function () {
     });
     
     Crafty.scene("level1", function () {
-		var i, tile, z, prop, reel, dir, rewardCount = 0;
-		var timeout;
-		           	
-		var levelLoader = new ADLevelLoader({
-			scenes: ['loading', 'start', 'level1', 'level2', 'level3', 'gameover'],
-			startScene: 'start',
-			defaultZ : 50,
-			componentRules: {
-				solid: true,
-				exit: true,
-				reward: function(loader, sprite, value) {
-					sprite.reward(value);
-					var rc = loader.getMeta('rewardCount', 0);
-					rc++;
-					loader.setMeta('rewardCount', rc);
-				},
-				SpriteAnimation: function(loader, sprite, value) {
-					var reel;
-					var prop = JSON.parse('{' + value + '}');
-					if ('updown' == prop.mode) {
-						reel = [];
-						for(i = prop.start; i <= prop.stop; i++) reel.push([i,0]);
-						for(i = prop.stop - 1; i > prop.start; i--) reel.push([i,0]);
-						sprite.animate(prop.name, reel);
-					} else if ('up' == prop.mode) {
-						sprite.animate(prop.name, prop.start, 0, prop.stop);
-					} else if ('down' == prop.mode) {
-						sprite.animate(prop.name, prop.stop, 0, prop.start);
-					} else {
-						console.log('unknown spriteanimation mode', prop.mode);
-					}
-					sprite.animate(prop.name, prop.time, -1);
-				}
-			}
-		});
-		
+		// Load level background tiles
 		levelLoader.loadTiledJSON('level1.json');
        	if (!levelLoader.tiledData) throw "Error loading level";
-
-		var map = new ADMap(levelLoader.tiledData);
 		levelLoader.createSpriteComponents();
 		levelLoader.createSpriteEntities();
        	
 		// Sky blue background to match clouds
 		Crafty.background('#5DB1FF');
-
 		
 		// Create player sprite
 		Crafty.sprite(32, "grog.png", {
@@ -286,14 +245,11 @@ window.onload = function () {
 			pickup: [0, 0],
 		});
 				
-		// Call the main scene
-		//Crafty.scene("main");
-		Crafty.audio.add({
-			reward: ['reward.mp3', 'reward.wav', 'reward.ogg']
-		});            	        
-		
 		// Scoreboard
-		Crafty.e("Score").rewardsRequired(levelLoader.getMeta('rewardCount', 0)).drawScore();
+		if (!scoreboard) {
+			scoreboard = Crafty.e("Score");
+		}
+		scoreboard.rewardsRequired(levelLoader.getMeta('rewardCount', 0)).drawScore();
 		
 		// Player
 		Crafty.e("2D, DOM, Ape, player, Twoway, Gravity")
@@ -303,19 +259,50 @@ window.onload = function () {
 			.gravity('solid')
 			.gravityConst(0.2)
 			.Ape();
+			
+		// Background music
+		Crafty.audio.play('level1', -1);
 
     });
 
-    //automatically play the loading scene
-    Crafty.scene("loading");
+
+	// Start engine
+    Crafty.init(640, 480);
     
+    // Initialise level loader
+	levelLoader = new ADLevelLoader({
+		scenes: ['loading', 'start', 'level1', 'level2', 'level3', 'gameover'],
+		startScene: 'start',
+		defaultZ : 50,
+		componentRules: {
+			solid: true,
+			exit: true,
+			reward: function(loader, sprite, value) {
+				sprite.reward(value);
+				var rc = loader.getMeta('rewardCount', 0);
+				rc++;
+				loader.setMeta('rewardCount', rc);
+			},
+			SpriteAnimation: function(loader, sprite, value) {
+				var reel;
+				var prop = JSON.parse('{' + value + '}');
+				if ('updown' == prop.mode) {
+					reel = [];
+					for(i = prop.start; i <= prop.stop; i++) reel.push([i,0]);
+					for(i = prop.stop - 1; i > prop.start; i--) reel.push([i,0]);
+					sprite.animate(prop.name, reel);
+				} else if ('up' == prop.mode) {
+					sprite.animate(prop.name, prop.start, 0, prop.stop);
+				} else if ('down' == prop.mode) {
+					sprite.animate(prop.name, prop.stop, 0, prop.start);
+				} else {
+					console.log('unknown spriteanimation mode', prop.mode);
+				}
+				sprite.animate(prop.name, prop.time, -1);
+			}
+		}
+	});
+	
+	// Run loading scene
+	Crafty.scene("loading");
 };
-
-
-
-// loading
-// intro
-// level1
-// level2
-// level3
-// game over
