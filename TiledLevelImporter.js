@@ -144,13 +144,31 @@ function ADLevelLoader(options) {
 	this.map = null;
 	this.tiledData = null;
 	this.meta = {};
-	this.scenes = _options.scenes || [];
+	this.scenes = _options.scenes || [''];
 	this.startScene = _options.startScene || '';
 	this.defaultZ = _options.defaultZ || 50;
+	this.currentScene = this.scenes[0];
 	
 	// If a function is defined signature is: function(loader, sprite, value) 
 	// where loader = ADLevelLoader instance, sprite = the sprite to configure, value = the component property value
 	this.componentRules = _options.componentRules || {}; 
+
+
+	this.getNextScene = function(update) {
+		var i, l = (this.scenes.length - 1);
+		for(i = 0; i < l; i++) {
+			if (this.currentScene == this.scenes[i]) {
+				if (update) this.currentScene = this.scenes[i + 1];
+				return this.scenes[i + 1];
+			}
+		}
+		return null;		
+	} 
+	
+	
+	this.setCurrentScene = function(scene) {
+		this.currentScene = scene;
+	}
 
 
 	// Load textfile with Ajax synchronously: takes path to file and optional MIME type

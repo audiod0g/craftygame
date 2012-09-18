@@ -55,7 +55,7 @@ window.onload = function () {
 					console.log("we are done!");
 					
 					// Fireup next level?
-					
+					Crafty.scene(levelLoader.getNextScene(true));
 					
 					//this.y = 60;
 				} else {
@@ -63,6 +63,9 @@ window.onload = function () {
 					this.y = this._y - 1;
 				}
 			});
+			
+			// Cheer!
+			Crafty.audio.play('cheer', 1, 0.7);
 		}
 	});
 	
@@ -206,14 +209,15 @@ window.onload = function () {
         // Prepare game audio
     	Crafty.audio.add({
 			reward: ['reward.mp3', 'reward.wav', 'reward.ogg'],
-			level1: ['level1.mp3']
+			level1: ['level1.mp3'],
+			cheer: ['cheer.mp3']
 		});            	        
               
 		// Load game images
        	Crafty.load(
        		imageList, 
 			function() {
-				Crafty.scene('level1');
+				Crafty.scene(levelLoader.getNextScene(true));
 			}, 
 			function(e) {
        			progress.text('Loading: ' + parseInt(e.percent) + '%');
@@ -224,6 +228,21 @@ window.onload = function () {
        		}
        	);
     });
+    
+    
+    Crafty.scene('start_level1', function() {
+    	Crafty.background('#f0d1b2');
+
+		Crafty.e("2D, DOM, Text").attr({ w: 640, h: 20, x: 0, y: 220 })
+						.text("Ready for level 1 !!!")
+						.textColor('#012345')
+						.css({ "text-align": "center" });
+						
+    	setTimeout(function() {
+    		Crafty.scene(levelLoader.getNextScene(true));
+    	}, 1000);
+    });
+
     
     Crafty.scene("level1", function () {
 		// Load level background tiles
@@ -247,7 +266,7 @@ window.onload = function () {
 				
 		// Scoreboard
 		if (!scoreboard) {
-			scoreboard = Crafty.e("Score");
+			scoreboard = Crafty.e("Score, Persist");
 		}
 		scoreboard.rewardsRequired(levelLoader.getMeta('rewardCount', 0)).drawScore();
 		
@@ -261,7 +280,63 @@ window.onload = function () {
 			.Ape();
 			
 		// Background music
-		Crafty.audio.play('level1', -1);
+		//Crafty.audio.play('level1', -1);
+
+    });
+
+
+    Crafty.scene('start_level2', function() {
+    	scoreboard.visible = false;
+    
+    	Crafty.background('#f09162');
+
+		Crafty.e("2D, DOM, Text").attr({ w: 640, h: 20, x: 0, y: 220 })
+						.text("Ready for level 2 !!!")
+						.textColor('#543210')
+						.css({ "text-align": "center" });
+						
+    	setTimeout(function() {
+    		Crafty.scene(levelLoader.getNextScene(true));
+    	}, 1000);
+    });
+    
+    
+    Crafty.scene("level2", function () {
+		// Load level background tiles
+		levelLoader.loadTiledJSON('level2.json');
+       	if (!levelLoader.tiledData) throw "Error loading level";
+		levelLoader.createSpriteComponents();
+		levelLoader.createSpriteEntities();
+       	
+		// Sky blue background to match clouds
+		Crafty.background('#5DB1FF');
+		
+		// Create player sprite
+		Crafty.sprite(32, "grog.png", {
+			player: [0, 0],
+		});
+		
+		// Create reward animation sprite
+		Crafty.sprite(16, "picked_up_16x16_colour.png", {
+			pickup: [0, 0],
+		});
+				
+		// Scoreboard
+		scoreboard.visible = true;
+		scoreboard.rewardsRequired(levelLoader.getMeta('rewardCount', 0)).drawScore();
+		
+		
+		// Player
+		Crafty.e("2D, DOM, Ape, player, Twoway, Gravity")
+/*			.attr({ x: 16, y: 400, z: 50 }) */
+			.attr({ x: 550, y: 50, z: 50 })
+			.twoway(1, 6)
+			.gravity('solid')
+			.gravityConst(0.2)
+			.Ape();
+			
+		// Background music
+		//Crafty.audio.play('level1', -1);
 
     });
 
@@ -271,7 +346,7 @@ window.onload = function () {
     
     // Initialise level loader
 	levelLoader = new ADLevelLoader({
-		scenes: ['loading', 'start', 'level1', 'level2', 'level3', 'gameover'],
+		scenes: ['loading', 'start_level1', 'level1', 'start_level2', 'level2', 'level3', 'gameover'],
 		startScene: 'start',
 		defaultZ : 50,
 		componentRules: {
@@ -302,6 +377,7 @@ window.onload = function () {
 			}
 		}
 	});
+	levelLoader.setCurrentScene('loading');
 	
 	// Run loading scene
 	Crafty.scene("loading");

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="40" height="30" tilewidth="16" tileheight="16">
+ <properties>
+  <property name="map_prop" value="test value"/>
+ </properties>
+ <tileset firstgid="1" name="tiles" tilewidth="16" tileheight="16">
+  <image source="tiles.png" width="256" height="608"/>
+ </tileset>
+ <tileset firstgid="609" name="spinning_coin_gold" tilewidth="16" tileheight="16">
+  <properties>
+   <property name="SpriteAnimation" value="&quot;name&quot;:&quot;spin&quot;, &quot;start&quot;:0, &quot;stop&quot;:7, &quot;mode&quot;:&quot;updown&quot;, &quot;time&quot;:100"/>
+   <property name="reward" value="100"/>
+  </properties>
+  <image source="spinning_coin_gold.png" width="128" height="16"/>
+ </tileset>
+ <tileset firstgid="617" name="spinning_coin_silver" tilewidth="16" tileheight="16">
+  <properties>
+   <property name="SpriteAnimation" value="&quot;name&quot;:&quot;spin&quot;, &quot;start&quot;:0, &quot;stop&quot;:7, &quot;mode&quot;:&quot;updown&quot;, &quot;time&quot;:100"/>
+   <property name="reward" value="50"/>
+  </properties>
+  <image source="spinning_coin_silver.png" width="128" height="16"/>
+ </tileset>
+ <tileset firstgid="625" name="gem_150_points" tilewidth="16" tileheight="16">
+  <properties>
+   <property name="SpriteAnimation" value="&quot;name&quot;:&quot;spin&quot;, &quot;start&quot;:0, &quot;stop&quot;:3, &quot;mode&quot;:&quot;up&quot;, &quot;time&quot;:50"/>
+   <property name="reward" value="150"/>
+  </properties>
+  <image source="gem_150_points.png" width="64" height="16"/>
+ </tileset>
+ <layer name="sky" width="40" height="30">
+  <properties>
+   <property name="2D" value="10"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt0jUOAlAABUHCTXDpcOlw6XC5/0GYW/yQvGK6LbdWrVTqNGjSok2HLj361Ap1A4aMGDNhyow5C5YFuxVrNmzZsefAkRPngt2FKzfuPHjy4s2Hb8Gu1Ff5L//lv/yX//Jf/st/+S//5b/8l//yX/77n/9+RzIkuA==
+  </data>
+ </layer>
+ <layer name="background" width="40" height="30">
+  <properties>
+   <property name="2D" value="10"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztzsENACAIADF21Q10/8gEfgmkTe5/EQAAANDHynb1xMfJbvUEDPMAKeoBrw==
+  </data>
+ </layer>
+ <layer name="solid" width="40" height="30" opacity="0.93">
+  <properties>
+   <property name="2D" value="20"/>
+   <property name="solid" value=""/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztlkkKwkAQRQPO48Z53OgN9AZ6A72BwwUc4+l9iwTKIDHR2N2LevDgLzr0p6GKeJ6iKJIDHm2XiCA7XfBqsUuIdkqGiU7yjrTZxDvJO9LmrMlhHgvY/NMdv3DDO/r4sNwlKfqmivIeORtFLGEZK1jFGtax4b3OzgznBvq1sI0d7GIP+zjAIY5wjBOciu8WuDTcNQ0rXAdZdnWFDW6DLLu6wg73QZZdXeGEZ9slvsDFWZH8c1aS7sK4M2GO7sssCHeh/8G4M+F/RnRfKtnzBLk0JWI=
+  </data>
+ </layer>
+ <layer name="gems" width="40" height="30">
+  <properties>
+   <property name="2D" value="30"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo4B+oJBpoF2ACWBuGkxuG6luQjabFDY9wolct41EkMmESo8CygEoLEfDcxQMdpA4RNIoKC/B3DoU3Izs3sEMBnsZNRTCcDCDwR5+9Ep/rxgR7LeMuNUNFUCveP2JJaz+DYPwGwX0BwCG6BH2
+  </data>
+ </layer>
+ <layer name="exit" width="40" height="30">
+  <properties>
+   <property name="2D" value="30"/>
+   <property name="exit" value=""/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJztzjEBACAMBLGvWHAADqgD0EsNMPPDRUEkPy2kHr8Xb6Nu0/i36pbGv123Y/wDAAAAAABeLsvlA/U=
+  </data>
+ </layer>
+ <layer name="foreground" width="40" height="30">
+  <properties>
+   <property name="2D" value="100"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzt1LkKwkAUheGbvIK+f+/au/auvWujTdzApXIB/yKCGQQjyGTC3AMfCQnJnFyYiGg0dnMMRE5B1i2S0U7p4mun9zV+Pfctr2/3eQb/js5Uo/kcc298O5rP5SF56morJeZRRgVV1FB3aEYNujTRQhsddB3q16NLHwMMMcLYoX4TukwxwxwLLFP0s7VXItbYYIsd9jhghXVGczT/dVfccMcjvn7GJb5fCEWKYfI5810ajat5AqnlVcU=
+  </data>
+ </layer>
+</map>
