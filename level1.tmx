@@ -41,7 +41,7 @@
    <property name="2D" value="10"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJzt10lOAkEUxnE0ujQu1APgCO6ch50DTjvFeedwAYcLiO4N6pVULgC6d9w77vRP0iadJ+qz7K5qDF/yo0jorqo0j3ohXh2LNaMFrWhDOzqQQBKdiDu6rgvd6EEv+tCPAQxiCMMOrxvBKMYwjhQmMIkpTGPG4XWzmEMa81jAIpawjBWsOrzOVd6KL1Xhr3PFGte+dWp4X/vNunW+z+S9YeSB+R/FGk3KNUvdq03G7LZPSbB+0sL3WEl5plSdHVrfRTA5pc7PcI6cw5qXz/TjeebZUwEXuPzF/hroA40WesENe7rFHe4V+9OcUUHW0hN7esYLXsX+5OMJq4ZNzuVy/T2ZxFatahNUH60kmolavRVj81z8qtf8t9jq7WnDuU16u6ZO1phrHRvY9EaZesU8srf/9N9Je25uMcc2drDrjZrIOpW9/S//nfzZY44M9nHgjVFKlv0c4Rgn3hhk3gEz12RT
+   eJztlzdPw0AYhs0JRsQA/IBQEzZ62ehlg4S6UXfqTsKOKH+J8gcoO3UHAhs8lmzJOhLruBxng/JKT+4kn1+/+vTFn5wQjtMAjdAEzdACrZCEFLRBwvK59QrH2YB29h3QCV3QDT3QC33QDwPC/rldsu3BIPshGIYRGIUxGIcJmIQpYf+cX79p9jOQhgzMwhzMwwIswpKwf86vX1T6dH9Cnu/Xr1Td4XEf8KlkXxXiWx24Jt8blKn6veDxKvnUK/oWuldVWb3bvinJ81MR9lFZ8VahPju0nsKMzujzc7iAywh7Xq6pX88rMl3DDdz+IF8t86BOmEpXXA9keoQneFbIp/KOMtlLb2TKwzt8SPnk8vxWD+u8l//q/0lHtnpVVabmaFnxVNz6zZXN92KxWfPfZGu2pzW9dWa7Sp8s47UCq7DmrbJqFHzk2R727aSazdUmHluwDTveqiK5T+XZXsq3U1D7eGQhBwfeGicdkecYTuDUW03qCxfRZ2U=
   </data>
  </layer>
  <layer name="gems" width="40" height="30">
@@ -58,7 +58,7 @@
    <property name="exit" value=""/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJzt0rERABAUBNFTLB3QAR1Qr9+ASODM7Ktgg5U85SSV9LrirEZbM+7r0TaM+2a0LeM+/rvj/h8AAAAA4C8bUCkGvA==
+   eJztzgEJAEAIBLAz/JvbEsKDbAmWAOx6lXT9XgAAAHDFADTLAQ4=
   </data>
  </layer>
  <layer name="foreground" width="40" height="30">

@@ -37,6 +37,10 @@ window.onload = function () {
 		    // Switch off controls - we are on auto pilot now
 			this.disableControl();
 			
+			this._up = false;
+			
+			this.unbind('KeyDown');
+			
 			// Remove gravity - so we can walk up
 			this.antigravity();
 			

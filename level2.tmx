@@ -40,7 +40,7 @@
    <property name="2D" value="10"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJztzsENACAIADF21Q10/8gEfgmkTe5/EQAAANDHynb1xMfJbvUEDPMAKeoBrw==
+   eJztzrkNACAMwMAwK88CPBvA3GQBKGgSIZ/k3iI+5SBSgvXFWde34fhv6tty/AcAAAAAr6KWrCcuqtasJ4DPbK/YBHY=
   </data>
  </layer>
  <layer name="solid" width="40" height="30" opacity="0.93">
@@ -49,7 +49,7 @@
    <property name="solid" value=""/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJztlkkKwkAQRQPO48Z53OgN9AZ6A72BwwUc4+l9iwTKIDHR2N2LevDgLzr0p6GKeJ6iKJIDHm2XiCA7XfBqsUuIdkqGiU7yjrTZxDvJO9LmrMlhHgvY/NMdv3DDO/r4sNwlKfqmivIeORtFLGEZK1jFGtax4b3OzgznBvq1sI0d7GIP+zjAIY5wjBOciu8WuDTcNQ0rXAdZdnWFDW6DLLu6wg73QZZdXeGEZ9slvsDFWZH8c1aS7sK4M2GO7sssCHeh/8G4M+F/RnRfKtnzBLk0JWI=
+   eJztltkJwkAURQPu64/7+qMdaAfagXbg0oBr7MES7NUjTOAZJCYaMwPOgQP3Y8JcBt4jjmOxWCQbvCpN4dFpq/IBb0qd+DsdNXbx+NdO8o6oOYl3kndEzXGTwjRmsPqjO77hhGd08aK5S1jsm1osr5GzkcUc5rGARSxhGSvO8+yMcJxAvxrWsYFNbGEbO9jFHvZxgEPx3QSnCXeNwgznKsuuprDApcqyqymscK2y7GoKO9zrLvEBJs6K5JezEnYXBp3xsn9fxoG3C903Bp3x/jP8+9ISP3c6JSba
   </data>
  </layer>
  <layer name="gems" width="40" height="30">
@@ -66,7 +66,7 @@
    <property name="exit" value=""/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJztzjEBACAMBLGvWHAADqgD0EsNMPPDRUEkPy2kHr8Xb6Nu0/i36pbGv123Y/wDAAAAAABeLsvlA/U=
+   eJztzkENADAIBLDD/3voxQULSaugCex7lXT9XgAAAAAXDDYnAS4=
   </data>
  </layer>
  <layer name="foreground" width="40" height="30">
@@ -74,7 +74,7 @@
    <property name="2D" value="100"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJzt1LkKwkAUheGbvIK+f+/au/auvWujTdzApXIB/yKCGQQjyGTC3AMfCQnJnFyYiGg0dnMMRE5B1i2S0U7p4mun9zV+Pfctr2/3eQb/js5Uo/kcc298O5rP5SF56morJeZRRgVV1FB3aEYNujTRQhsddB3q16NLHwMMMcLYoX4TukwxwxwLLFP0s7VXItbYYIsd9jhghXVGczT/dVfccMcjvn7GJb5fCEWKYfI5810ajat5AqnlVcU=
+   eJztl8kKwkAQBTv5Bf3/u+vd9e56d73oJW7gcnIBC4wQQsAIMnZIFxQzJIR5POiBiBiGW46eyMl7rVp4Z9KEZUqHi0zRM77d543ofOe1g19jnRpGMvHZ+LTGv8sCWcrqihJ9lLGCVaxhXVFHDbI0sYVt7GBXUb4eWfo4wCGOcKwo34QsU5zhHBe4TJHP1awEnLHBLe5wjwdc4fpPPcbvuive8I6P8PkZL+H7gi9S9JP/yezOMbTzBAscVrc=
   </data>
  </layer>
 </map>
