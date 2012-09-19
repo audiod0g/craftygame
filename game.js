@@ -248,9 +248,9 @@ window.onload = function () {
     });
 
     
-    Crafty.scene("level1", function () {
+    function prepareLevel(json, attr2d) {
 		// Load level background tiles
-		levelLoader.loadTiledJSON('level1.json');
+		levelLoader.loadTiledJSON(json);
        	if (!levelLoader.tiledData) throw "Error loading level";
 		levelLoader.createSpriteComponents();
 		levelLoader.createSpriteEntities();
@@ -277,7 +277,7 @@ window.onload = function () {
 		// Player
 		Crafty.e("2D, DOM, Ape, player, Twoway, Gravity")
 /*			.attr({ x: 16, y: 400, z: 50 }) */
-			.attr({ x: 550, y: 50, z: 50 })
+			.attr(attr2d)
 			.twoway(1, 6)
 			.gravity('solid')
 			.gravityConst(0.2)
@@ -285,7 +285,11 @@ window.onload = function () {
 			
 		// Background music
 		//Crafty.audio.play('level1', -1);
+    }
 
+    
+    Crafty.scene("level1", function () {
+		prepareLevel('level1.json', { x: 550, y: 50, z: 50 });
     });
 
 
@@ -306,42 +310,7 @@ window.onload = function () {
     
     
     Crafty.scene("level2", function () {
-		// Load level background tiles
-		levelLoader.loadTiledJSON('level2.json');
-       	if (!levelLoader.tiledData) throw "Error loading level";
-		levelLoader.createSpriteComponents();
-		levelLoader.createSpriteEntities();
-       	
-		// Sky blue background to match clouds
-		Crafty.background('#5DB1FF');
-		
-		// Create player sprite
-		Crafty.sprite(32, "grog.png", {
-			player: [0, 0],
-		});
-		
-		// Create reward animation sprite
-		Crafty.sprite(16, "picked_up_16x16_colour.png", {
-			pickup: [0, 0],
-		});
-				
-		// Scoreboard
-		scoreboard.visible = true;
-		scoreboard.rewardsRequired(levelLoader.getMeta('rewardCount', 0)).drawScore();
-		
-		
-		// Player
-		Crafty.e("2D, DOM, Ape, player, Twoway, Gravity")
-/*			.attr({ x: 16, y: 400, z: 50 }) */
-			.attr({ x: 550, y: 50, z: 50 })
-			.twoway(1, 6)
-			.gravity('solid')
-			.gravityConst(0.2)
-			.Ape();
-			
-		// Background music
-		//Crafty.audio.play('level1', -1);
-
+   		prepareLevel('level2.json', { x: 550, y: 50, z: 50 });
     });
 
 
